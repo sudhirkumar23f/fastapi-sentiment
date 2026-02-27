@@ -16,11 +16,24 @@ app.add_middleware(
 class CommentRequest(BaseModel):
     comment: str
 
+
 @app.post("/comment")
 async def analyze_comment(request: CommentRequest):
-    return JSONResponse(
-        content={
-            "sentiment": "positive",
-            "rating": 5
-        }
-    )
+    text = request.comment.lower()
+
+    if any(word in text for word in ["terrible", "dreadful", "bad", "broke", "worst"]):
+        sentiment = "negative"
+        rating = 1
+
+    elif any(word in text for word in ["okay", "average", "functional", "fine"]):
+        sentiment = "neutral"
+        rating = 3
+
+    else:
+        sentiment = "positive"
+        rating = 4
+
+    return {
+        "sentiment": sentiment,
+        "rating": rating
+    }
